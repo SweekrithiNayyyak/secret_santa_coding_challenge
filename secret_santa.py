@@ -13,7 +13,7 @@ class SecretSanta:
         self.previous_assignments = (
             self.load_previous_assignments() if previous_assignments_file else {}
         )
-        self.assignment_map = defaultdict(list)
+        self.assignment_map = self.build_assignment_map()
 
     def load_employees(self):
         """Load employee data from CSV."""
@@ -36,50 +36,44 @@ class SecretSanta:
         }
 
     def build_assignment_map(self):
-        """Create a hash table mapping employees to possible secret children based on emails."""
+        """Creates a hash table mapping employees to possible secret children."""
+        assignment_map = {}
         for email in self.employees:
-            self.assignment_map[email] = [
-                e
-                for e in self.employees
-                if e != email and e != self.previous_assignments.get(email, None)
-            ]
+            possible_choices = set(self.employees.keys()) - {email}
+            if email in self.previous_assignments:
+                possible_choices.discard(self.previous_assignments[email])
+            assignment_map[email] = possible_choices
+        return assignment_map
 
     def assign_santa(self):
-        """Ensure everyone gets assigned first, then optimize choices while preserving order."""
-        self.build_assignment_map()
-        assignments = {}
-        available_employees = set(self.employees.keys())
-
+        """Assigns Secret Santa using a backtracking approach to avoid deadlocks."""
         ordered_employees = list(self.employees.keys())
+        assignments = {}
+        used = set()
 
-        for email in ordered_employees:
-            possible_choices = [
-                e
-                for e in available_employees
-                if e != email and e not in assignments.values()
-            ]
-            if not possible_choices:
-                raise ValueError("Failed to generate a valid assignment. Try again!")
+        def backtrack(index):
+            if index == len(ordered_employees):
+                return True  # Successfully assigned all
 
-            choice_email = random.choice(possible_choices)
-            assignments[email] = choice_email
-            available_employees.remove(choice_email)
+            email = ordered_employees[index]
+            choices = list(self.assignment_map[email] - used)
+            if not choices:
+                return False  # No valid assignment, trigger backtracking
 
-        for email in assignments:
-            if (
-                email in self.assignment_map
-                and assignments[email] in self.assignment_map[email]
-            ):
-                continue
+            random.shuffle(choices)  # Shuffle to introduce randomness
 
-            better_choices = [
-                e for e in self.assignment_map[email] if e in available_employees
-            ]
-            if better_choices:
-                new_choice = random.choice(better_choices)
-                available_employees.add(assignments[email])
-                assignments[email] = new_choice
-                available_employees.remove(new_choice)
+            for choice in choices:
+                assignments[email] = choice
+                used.add(choice)
+                if backtrack(index + 1):
+                    return True  # If successful, return immediately
+                # Undo the assignment (backtrack)
+                used.remove(choice)
+                del assignments[email]
+            return False
+
+        if not backtrack(0):
+            raise ValueError("Failed to find a valid Secret Santa assignment.")
 
         return assignments
 
