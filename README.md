@@ -14,14 +14,14 @@ This project automates the process of assigning Secret Santa pairs while ensurin
 |-- main.py               # Entry point of the application
 |-- parse_csv.py          # Handles CSV reading and validation
 |-- secret_santa.py       # Contains the Secret Santa assignment logic
-  
+|-- test_secret_santa.py  # Contains test cases
 ```
 
 ## Setup & Installation
 ### Prerequisites
 Ensure you have Python installed (>=3.6). You will also need Pandas:
 ```bash
-pip install pandas
+pip install pandas pytest
 ```
 
 ### Running the Program
@@ -54,6 +54,43 @@ Employee_Name,Employee_EmailID,Secret_Child_Name,Secret_Child_EmailID
 John Doe,john.doe@example.com,Jane Smith,jane.smith@example.com
 Jane Smith,jane.smith@example.com,John Doe,john.doe@example.com
 ```
+## Explanation of Code
+### **1. `main.py` (Entry Point)**
+- Handles user input and ensures valid file paths are provided.
+- Calls `SecretSanta` to process assignments and generates output CSV.
+
+### **2. `parse_csv.py` (CSV Parsing)**
+- Reads employee and previous assignment data from CSV files.
+- Handles errors like missing files, malformed CSVs, and missing columns.
+
+### **3. `secret_santa.py` (Assignment Logic)**
+- Ensures each employee gets assigned a unique recipient.
+- Avoids self-assignments and previous matches.
+- Uses a **circular assignment approach** to ensure correctness.
+
+## Automated Tests
+The `test_secret_santa.py` file contains test cases to ensure the correctness and reliability of the code.
+
+### **Test Cases Implemented**
+
+| Test Case | Description |
+|-----------|-------------|
+| **test_parse_csv** | Ensures the CSV file is parsed correctly and all data is loaded. |
+| **test_secret_santa_assignments** | Verifies that all employees get assigned, with no self-assignments or repeat matches. |
+| **test_output_csv** | Ensures that the Secret Santa assignments are written to an output CSV file correctly. |
+| **test_single_employee** | Ensures that the script raises a `ValueError` when only one employee exists. |
+
+### **How to Run Tests**
+Run the following command to execute all test cases:
+```bash
+pytest test_secret_santa.py
+```
+
+The tests ensure:
+ The script runs successfully with valid inputs.
+ Edge cases are handled properly.
+ The output meets expected constraints (no self-assignments, no repeated matches).
+Performance remains stable with different data inputs.
 
 ## Features
 Efficient assignment using circular rotation.
