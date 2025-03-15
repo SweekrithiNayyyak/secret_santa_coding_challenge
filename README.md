@@ -7,7 +7,7 @@ This project automates the process of assigning Secret Santa pairs while ensurin
 - Each employee gets a unique secret child.
 - Employees are not assigned to themselves.
 - Employees are not assigned to the same person as in the previous year.
-- The assignment process is optimized for efficiency (O(1) lookups and assignment).
+
 
 ## Project Structure
 ```
@@ -66,7 +66,7 @@ Jane Smith,jane.smith@example.com,John Doe,john.doe@example.com
 ### **3. `secret_santa.py` (Assignment Logic)**
 - Ensures each employee gets assigned a unique recipient.
 - Avoids self-assignments and previous matches.
-- Uses a **circular assignment approach** to ensure correctness.
+- Uses a **backtracking logic** to ensure correctness.
 
 ## Automated Tests
 The `test_secret_santa.py` file contains test cases to ensure the correctness and reliability of the code.
@@ -75,10 +75,11 @@ The `test_secret_santa.py` file contains test cases to ensure the correctness an
 
 | Test Case | Description |
 |-----------|-------------|
-| **test_parse_csv** | Ensures the CSV file is parsed correctly and all data is loaded. |
+| **test_parse_csv** |Checks if the CSV file is parsed correctly and all data is loaded. |
 | **test_secret_santa_assignments** | Verifies that all employees get assigned, with no self-assignments or repeat matches. |
 | **test_output_csv** | Ensures that the Secret Santa assignments are written to an output CSV file correctly. |
 | **test_single_employee** | Ensures that the script raises a `ValueError` when only one employee exists. |
+| **test_output_is_right** | Checks if the csv file generated adheres to the conditipn.
 
 ### **How to Run Tests**
 Run the following command to execute all test cases:
@@ -93,10 +94,10 @@ The tests ensure:
 Performance remains stable with different data inputs.
 
 ## Features
-Efficient assignment using circular rotation.
+Efficient assignment using backtracing, gives new assignments evertime.
 Preserves employee order.
 Prevents self-assignments and repeated matches.
-Modular and extensible design for easy maintenance.
+Modular and extensible design.
 
 
 
